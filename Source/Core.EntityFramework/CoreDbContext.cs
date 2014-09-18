@@ -10,6 +10,11 @@ namespace Thinktecture.IdentityServer.Core.EntityFramework
         {
         }
 
+        public CoreDbContext()
+            : base("Thinktecture.IdentityServer.Core")
+        {
+        }
+
         public DbSet<Client> Clients { get; set; }
         public DbSet<Scope> Scopes { get; set; }
         public DbSet<Consent> Consents { get; set; }
