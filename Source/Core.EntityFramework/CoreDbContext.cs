@@ -8,10 +8,11 @@ namespace Thinktecture.IdentityServer.Core.EntityFramework
         public CoreDbContext(string connectionString)
             : base(connectionString)
         {
+            Configuration.ProxyCreationEnabled = false;
         }
 
         public CoreDbContext()
-            : base("Thinktecture.IdentityServer.Core")
+            : this("Thinktecture.IdentityServer.Core")
         {
         }
 
