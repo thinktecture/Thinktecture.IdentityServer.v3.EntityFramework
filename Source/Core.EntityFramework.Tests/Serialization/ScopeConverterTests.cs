@@ -23,7 +23,7 @@ namespace Thinktecture.IdentityServer.v3.EntityFramework.Tests.Serialization
             {
                 Name = "email",
                 Required = true,
-                IsOpenIdScope = true,
+                Type = ScopeType.Identity,
                 Emphasize = true,
                 DisplayName = "email foo",
                 Description = "desc foo",
@@ -35,7 +35,7 @@ namespace Thinktecture.IdentityServer.v3.EntityFramework.Tests.Serialization
             {
                 Name = "read",
                 Required = true,
-                IsOpenIdScope = false,
+                Type = ScopeType.Resource,
                 Emphasize = true,
                 DisplayName = "foo",
                 Description = "desc",
