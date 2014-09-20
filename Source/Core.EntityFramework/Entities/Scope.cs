@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using Thinktecture.IdentityServer.Core.Models;
 
 namespace Thinktecture.IdentityServer.Core.EntityFramework.Entities
 {
@@ -14,7 +15,7 @@ namespace Thinktecture.IdentityServer.Core.EntityFramework.Entities
         public virtual string Description { get; set; }
         public virtual bool Required { get; set; }
         public virtual bool Emphasize { get; set; }
-        public virtual bool IsOpenIdScope { get; set; }
+        public virtual ScopeType Type { get; set; }
 
         public virtual ICollection<ScopeClaim> ScopeClaims { get; set; }
     }
