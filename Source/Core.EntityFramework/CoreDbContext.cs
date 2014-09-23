@@ -10,6 +10,16 @@ namespace Thinktecture.IdentityServer.Core.EntityFramework
     public abstract class CoreDbContextFactoryBase
     {
         public abstract ICoreDbContext Create();
+
+        public static void CreateModel(DbModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<Client>()
+                .HasMany(x => x.RedirectUris).WithRequired(x => x.Client).WillCascadeOnDelete();
+            modelBuilder.Entity<Client>()
+                .HasMany(x => x.ScopeRestrictions).WithRequired(x => x.Client).WillCascadeOnDelete();
+            modelBuilder.Entity<Scope>()
+                .HasMany(x => x.ScopeClaims).WithRequired(x => x.Scope).WillCascadeOnDelete();
+        }
     }
 
     public class CoreDbContextFactoryViaConnectionString : CoreDbContextFactoryBase
@@ -141,17 +151,7 @@ namespace Thinktecture.IdentityServer.Core.EntityFramework
         {
             base.OnModelCreating(modelBuilder);
 
-            CreateModel(modelBuilder);
-        }
-
-        public static void CreateModel(DbModelBuilder modelBuilder)
-        {
-            modelBuilder.Entity<Client>()
-                .HasMany(x => x.RedirectUris).WithRequired(x => x.Client).WillCascadeOnDelete();
-            modelBuilder.Entity<Client>()
-                .HasMany(x => x.ScopeRestrictions).WithRequired(x => x.Client).WillCascadeOnDelete();
-            modelBuilder.Entity<Scope>()
-                .HasMany(x => x.ScopeClaims).WithRequired(x => x.Scope).WillCascadeOnDelete();
+            CoreDbContextFactoryBase.CreateModel(modelBuilder);
         }
     }
 }
