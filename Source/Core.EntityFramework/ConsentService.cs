@@ -8,11 +8,11 @@ namespace Thinktecture.IdentityServer.Core.EntityFramework
 {
     public class ConsentService : IConsentService
     {
-        private readonly string _connectionString;
+        private readonly CoreDbContextFactoryBase _dbFactory;
 
-        public ConsentService(string connectionString)
+        public ConsentService(CoreDbContextFactoryBase dbFactory)
         {
-            _connectionString = connectionString;
+            _dbFactory = dbFactory;
         }
 
         public Task<bool> RequiresConsentAsync(Models.Client client, System.Security.Claims.ClaimsPrincipal user, IEnumerable<string> scopes)
@@ -26,7 +26,7 @@ namespace Thinktecture.IdentityServer.Core.EntityFramework
 
             string subjectId = user.GetSubjectId();
 
-            using (var db = new CoreDbContext(_connectionString))
+            using (var db = _dbFactory.Create())
             {
                 var exists = db.Consents.Any(c => c.ClientId == client.ClientId &&
                                                 c.Scopes == orderedScopes &&
@@ -40,7 +40,7 @@ namespace Thinktecture.IdentityServer.Core.EntityFramework
         {
             if (client.AllowRememberConsent)
             {
-                using (var db = new CoreDbContext(_connectionString))
+                using (var db = _dbFactory.Create())
                 {
                     var clientId = client.ClientId;
                     var subject = user.GetSubjectId();

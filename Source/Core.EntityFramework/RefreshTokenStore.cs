@@ -8,14 +8,14 @@ namespace Thinktecture.IdentityServer.Core.EntityFramework
 {
     public class RefreshTokenStore : BaseTokenStore<RefreshToken>, IRefreshTokenStore
     {
-        public RefreshTokenStore(string connectionstring)
-            : base(connectionstring, TokenType.RefreshToken)
+        public RefreshTokenStore(CoreDbContextFactoryBase dbFactory)
+            : base(dbFactory, TokenType.RefreshToken)
         {
         }
 
         public override Task StoreAsync(string key, RefreshToken value)
         {
-            using (var db = new CoreDbContext(ConnectionString))
+            using (var db =DbFactory.Create())
             {
                 var efToken = new Entities.Token
                 {

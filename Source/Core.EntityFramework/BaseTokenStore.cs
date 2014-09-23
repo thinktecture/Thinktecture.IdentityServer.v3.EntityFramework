@@ -9,17 +9,18 @@ namespace Thinktecture.IdentityServer.Core.EntityFramework
 {
     public abstract class BaseTokenStore<T> where T : class
     {
-        private readonly string _connectionString;
         protected readonly TokenType TokenType;
 
-        protected string ConnectionString
+        private readonly CoreDbContextFactoryBase _dbFactory;
+
+        public CoreDbContextFactoryBase DbFactory
         {
-            get { return _connectionString; }
+            get { return _dbFactory; }
         }
 
-        protected BaseTokenStore(string connectionString, TokenType tokenType)
+        protected BaseTokenStore(CoreDbContextFactoryBase dbFactory, TokenType tokenType)
         {
-            _connectionString = connectionString;
+            _dbFactory = dbFactory;
             TokenType = tokenType;
         }
 
@@ -28,8 +29,8 @@ namespace Thinktecture.IdentityServer.Core.EntityFramework
             var settings = new JsonSerializerSettings();
             settings.Converters.Add(new ClaimConverter());
             settings.Converters.Add(new ClaimsPrincipalConverter());
-            settings.Converters.Add(new ClientConverter(new ClientStore(ConnectionString)));
-            var svc = new ScopeStore(ConnectionString);
+            settings.Converters.Add(new ClientConverter(new ClientStore(_dbFactory)));
+            var svc = new ScopeStore(_dbFactory);
             var scopes = AsyncHelper.RunSync(async () => await svc.GetScopesAsync());
             settings.Converters.Add(new ScopeConverter(scopes.ToArray()));
             return settings;
@@ -47,7 +48,7 @@ namespace Thinktecture.IdentityServer.Core.EntityFramework
 
         public Task<T> GetAsync(string key)
         {
-            using (var db = new CoreDbContext(ConnectionString))
+            using (var db = _dbFactory.Create())
             {
                 var token = db.Tokens.FirstOrDefault(c => c.Key == key && c.TokenType == TokenType);
                 if (token == null || token.Expiry < DateTime.UtcNow) return Task.FromResult<T>(null);
@@ -59,7 +60,7 @@ namespace Thinktecture.IdentityServer.Core.EntityFramework
 
         public Task RemoveAsync(string key)
         {
-            using (var db = new CoreDbContext(ConnectionString))
+            using (var db = _dbFactory.Create())
             {
                 var code = db.Tokens.FirstOrDefault(c => c.Key == key && c.TokenType == TokenType);
 

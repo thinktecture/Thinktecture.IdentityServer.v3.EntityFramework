@@ -6,16 +6,16 @@ namespace Thinktecture.IdentityServer.Core.EntityFramework
 {
     public class ClientStore : IClientStore
     {
-        private readonly string _connectionString;
+        private readonly CoreDbContextFactoryBase _dbFactory;
 
-        public ClientStore(string connectionString)
+        public ClientStore(CoreDbContextFactoryBase dbFactory)
         {
-            _connectionString = connectionString;
+            _dbFactory = dbFactory;
         }
 
         public Task<Models.Client> FindClientByIdAsync(string clientId)
         {
-            using(var db = new CoreDbContext(_connectionString))
+            using (var db = _dbFactory.Create())
             {
                 var client = db.Clients
                     .Include("RedirectUris")
@@ -23,7 +23,7 @@ namespace Thinktecture.IdentityServer.Core.EntityFramework
                     .SingleOrDefault(x => x.ClientId == clientId);
 
                 Models.Client model = client.ToModel();
-                return Task.FromResult(model);    
+                return Task.FromResult(model);
             }
         }
     }

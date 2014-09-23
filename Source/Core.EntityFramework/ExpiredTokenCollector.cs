@@ -6,12 +6,12 @@ namespace Thinktecture.IdentityServer.Core.EntityFramework
 {
     public class ExpiredTokenCollector
     {
-        private static string _connectionString;
         private static readonly Timer Timer = new Timer();
+        private static CoreDbContextFactoryBase _dbFactory;
 
-        public static void Start(string connectionString, int cleanupIntervalInMinutes)
+        public static void Start(CoreDbContextFactoryBase dbFactory, int cleanupIntervalInMinutes)
         {
-            _connectionString = connectionString;
+            _dbFactory = dbFactory;
 
             Timer.AutoReset = true;
             Timer.Interval = cleanupIntervalInMinutes * 60 * 1000;
@@ -30,7 +30,7 @@ namespace Thinktecture.IdentityServer.Core.EntityFramework
             // Clean up expired tokens
             DateTime referenceDate = DateTime.UtcNow;
 
-            using (var db = new CoreDbContext(_connectionString))
+            using (var db =_dbFactory.Create())
             {
                 db.Tokens.RemoveRange(db.Tokens.Where(c => c.Expiry < referenceDate));
                 db.SaveChanges();
