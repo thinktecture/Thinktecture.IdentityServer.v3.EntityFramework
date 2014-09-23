@@ -8,7 +8,7 @@ namespace SelfHost.Config
     {
         public static IdentityServerServiceFactory Configure(string connString)
         {
-            var svcFactory = new ServiceFactory(connString);
+            var svcFactory = new ServiceFactory(new CoreDbContextFactoryViaConnectionString(connString));
             svcFactory.ConfigureClients(Clients.Get());
             svcFactory.ConfigureScopes(Scopes.Get());
 

@@ -9,14 +9,14 @@ namespace Thinktecture.IdentityServer.Core.EntityFramework
 {
     public class AuthorizationCodeStore : BaseTokenStore<AuthorizationCode>, IAuthorizationCodeStore
     {
-        public AuthorizationCodeStore(string connectionString)
-            : base(connectionString, TokenType.AuthorizationCode)
+        public AuthorizationCodeStore(CoreDbContextFactoryBase dbFactory)
+            : base(dbFactory, TokenType.AuthorizationCode)
         {
         }
 
         public override Task StoreAsync(string key, AuthorizationCode code)
         {
-            using (var db = new CoreDbContext(ConnectionString))
+            using (var db = DbFactory.Create())
             {
                 var efCode = new Entities.Token
                 {

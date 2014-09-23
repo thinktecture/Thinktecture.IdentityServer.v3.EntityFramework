@@ -7,16 +7,16 @@ namespace Thinktecture.IdentityServer.Core.EntityFramework
 {
     public class ScopeStore : IScopeStore
     {
-        private readonly string _connectionString;
+        private readonly CoreDbContextFactoryBase _dbFactory;
 
-        public ScopeStore(string connectionString)
+        public ScopeStore(CoreDbContextFactoryBase dbFactory)
         {
-            _connectionString = connectionString;
+            _dbFactory = dbFactory;
         }
 
         public Task<IEnumerable<Models.Scope>> GetScopesAsync()
         {
-            using (var db = new CoreDbContext(_connectionString))
+            using (var db = _dbFactory.Create())
             {
                 var scopes = db.Scopes
                     .Include("ScopeClaims");

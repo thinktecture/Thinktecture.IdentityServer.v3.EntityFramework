@@ -8,46 +8,46 @@ namespace Thinktecture.IdentityServer.Core.EntityFramework
 {
     public class ServiceFactory
     {
-        private readonly string _connectionString;
-        public ServiceFactory(string connectionString)
+        private readonly CoreDbContextFactoryBase _dbFactory;
+
+        public ServiceFactory(CoreDbContextFactoryBase dbFactory)
         {
-            _connectionString = connectionString;
-            Database.SetInitializer(new CreateDatabaseIfNotExists<CoreDbContext>());
+            _dbFactory = dbFactory;
         }
 
         public IClientStore CreateClientStore()
         {
-            return new ClientStore(_connectionString);
+            return new ClientStore(_dbFactory);
         }
 
         public IScopeStore CreateScopeStore()
         {
-            return new ScopeStore(_connectionString);
+            return new ScopeStore(_dbFactory);
         }
 
         public IConsentService CreateConsentService()
         {
-            return new ConsentService(_connectionString);
+            return new ConsentService(_dbFactory);
         }
 
         public IAuthorizationCodeStore CreateAuthorizationCodeStore()
         {
-            return new AuthorizationCodeStore(_connectionString);
+            return new AuthorizationCodeStore(_dbFactory);
         }
 
         public ITokenHandleStore CreateTokenHandleStore()
         {
-            return new TokenHandleStore(_connectionString);
+            return new TokenHandleStore(_dbFactory);
         }
 
         public IRefreshTokenStore CreateRefreshTokenStore()
         {
-            return new RefreshTokenStore(_connectionString);
+            return new RefreshTokenStore(_dbFactory);
         }
 
         public void ConfigureClients(IEnumerable<Client> clients)
         {
-            using (var db = new CoreDbContext(_connectionString))
+            using (var db = _dbFactory.Create())
             {
                 if (!db.Clients.Any())
                 {
@@ -63,7 +63,7 @@ namespace Thinktecture.IdentityServer.Core.EntityFramework
 
         public void ConfigureScopes(IEnumerable<Scope> scopes)
         {
-            using (var db = new CoreDbContext(_connectionString))
+            using (var db = _dbFactory.Create())
             {
                 if (!db.Scopes.Any())
                 {

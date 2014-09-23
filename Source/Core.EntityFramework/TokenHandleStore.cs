@@ -7,14 +7,14 @@ namespace Thinktecture.IdentityServer.Core.EntityFramework
 {
     public class TokenHandleStore : BaseTokenStore<Token>, ITokenHandleStore
     {
-        public TokenHandleStore(string connectionString)
-            : base(connectionString, Entities.TokenType.TokenHandle)
+        public TokenHandleStore(CoreDbContextFactoryBase dbFactory)
+            : base(dbFactory, Entities.TokenType.TokenHandle)
         {
         }
 
         public override Task StoreAsync(string key, Token value)
         {
-            using (var db = new CoreDbContext(ConnectionString))
+            using (var db = DbFactory.Create())
             {
                 var efToken = new Entities.Token
                 {
