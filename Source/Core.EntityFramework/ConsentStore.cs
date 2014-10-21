@@ -18,29 +18,30 @@ using System.Linq;
 using System.Threading.Tasks;
 using Thinktecture.IdentityServer.Core.Extensions;
 using Thinktecture.IdentityServer.Core.Services;
+using System.Data.Entity;
 
 namespace Thinktecture.IdentityServer.Core.EntityFramework
 {
     public class ConsentStore : IConsentStore
     {
-        private readonly string _connectionString;
+        private readonly CoreDbContext _db;
 
-        public ConsentStore(string connectionString)
+        public ConsentStore(CoreDbContext db)
         {
-            _connectionString = connectionString;
+            _db = db;
         }
 
-        public Task<bool> RequiresConsentAsync(string client, string subject, IEnumerable<string> scopes)
+        public async Task<bool> RequiresConsentAsync(string client, string subject, IEnumerable<string> scopes)
         {
             var orderedScopes = GetOrderedScopes(scopes);
 
-            using (var db = new CoreDbContext(_connectionString))
+            var db = _db;
             {
-                var exists = db.Consents.Any(c => c.ClientId == client &&
+                var exists = await db.Consents.AnyAsync(c => c.ClientId == client &&
                                                 c.Scopes == orderedScopes &&
                                                 c.Subject == subject);
 
-                return Task.FromResult(!exists);
+                return !exists;
             }
         }
 
@@ -51,7 +52,7 @@ namespace Thinktecture.IdentityServer.Core.EntityFramework
 
         public async Task UpdateConsentAsync(string client, string subject, IEnumerable<string> scopes)
         {
-            using (var db = new CoreDbContext(_connectionString))
+            var db = _db;
             {
                 var consent = await db.Consents.FindAsync(subject, client);
 
@@ -74,7 +75,7 @@ namespace Thinktecture.IdentityServer.Core.EntityFramework
                     db.Consents.Remove(consent);
                 }
 
-                db.SaveChanges();
+                await db.SaveChangesAsync();
             }
         }
     }

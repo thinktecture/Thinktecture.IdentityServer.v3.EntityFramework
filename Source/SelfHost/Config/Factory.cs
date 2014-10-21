@@ -13,7 +13,9 @@ namespace SelfHost.Config
     {
         public static IdentityServerServiceFactory Configure(string connString)
         {
-            var svcFactory = new ServiceFactory(connString);
+            var coreDb = new CoreDbContext(connString);
+
+            var svcFactory = new ServiceFactory(coreDb);
             svcFactory.ConfigureClients(Clients.Get());
             svcFactory.ConfigureScopes(Scopes.Get());
 

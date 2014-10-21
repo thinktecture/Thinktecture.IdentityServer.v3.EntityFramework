@@ -17,19 +17,20 @@ using System;
 using System.Threading.Tasks;
 using Thinktecture.IdentityServer.Core.Connect.Models;
 using Thinktecture.IdentityServer.Core.Services;
+using System.Data.Entity;
 
 namespace Thinktecture.IdentityServer.Core.EntityFramework
 {
     public class TokenHandleStore : BaseTokenStore<Token>, ITokenHandleStore
     {
-        public TokenHandleStore(string connectionString)
-            : base(connectionString, Entities.TokenType.TokenHandle)
+        public TokenHandleStore(CoreDbContext db)
+            : base(db, Entities.TokenType.TokenHandle)
         {
         }
 
         public override Task StoreAsync(string key, Token value)
         {
-            using (var db = new CoreDbContext(ConnectionString))
+            var db = Db;
             {
                 var efToken = new Entities.Token
                 {
@@ -40,10 +41,9 @@ namespace Thinktecture.IdentityServer.Core.EntityFramework
                 };
 
                 db.Tokens.Add(efToken);
-                db.SaveChanges();
+                return db.SaveChangesAsync();
             }
-            
-            return Task.FromResult(0);
+
         }
     }
 }
