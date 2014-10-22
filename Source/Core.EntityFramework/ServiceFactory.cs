@@ -23,46 +23,46 @@ namespace Thinktecture.IdentityServer.Core.EntityFramework
 {
     public class ServiceFactory
     {
-        private readonly string _connectionString;
-        public ServiceFactory(string connectionString)
+        private readonly CoreDbContext _db;
+        public ServiceFactory(CoreDbContext connectionString)
         {
-            _connectionString = connectionString;
+            _db = connectionString;
             Database.SetInitializer(new CreateDatabaseIfNotExists<CoreDbContext>());
         }
 
         public IClientStore CreateClientStore()
         {
-            return new ClientStore(_connectionString);
+            return new ClientStore(_db);
         }
 
         public IScopeStore CreateScopeStore()
         {
-            return new ScopeStore(_connectionString);
+            return new ScopeStore(_db);
         }
 
         public IConsentStore CreateConsentStore()
         {
-            return new ConsentStore(_connectionString);
+            return new ConsentStore(_db);
         }
 
         public IAuthorizationCodeStore CreateAuthorizationCodeStore()
         {
-            return new AuthorizationCodeStore(_connectionString);
+            return new AuthorizationCodeStore(_db);
         }
 
         public ITokenHandleStore CreateTokenHandleStore()
         {
-            return new TokenHandleStore(_connectionString);
+            return new TokenHandleStore(_db);
         }
 
         public IRefreshTokenStore CreateRefreshTokenStore()
         {
-            return new RefreshTokenStore(_connectionString);
+            return new RefreshTokenStore(_db);
         }
 
         public void ConfigureClients(IEnumerable<Client> clients)
         {
-            using (var db = new CoreDbContext(_connectionString))
+            var db = _db;
             {
                 if (!db.Clients.Any())
                 {
@@ -78,7 +78,7 @@ namespace Thinktecture.IdentityServer.Core.EntityFramework
 
         public void ConfigureScopes(IEnumerable<Scope> scopes)
         {
-            using (var db = new CoreDbContext(_connectionString))
+            var db = _db;
             {
                 if (!db.Scopes.Any())
                 {

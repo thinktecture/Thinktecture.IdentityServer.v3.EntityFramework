@@ -19,22 +19,23 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Thinktecture.IdentityServer.Core.EntityFramework.Serialization;
 using Thinktecture.IdentityServer.Core.EntityFramework.Entities;
+using System.Data.Entity;
 
 namespace Thinktecture.IdentityServer.Core.EntityFramework
 {
     public abstract class BaseTokenStore<T> where T : class
     {
-        private readonly string _connectionString;
+        private readonly CoreDbContext _db;
         protected readonly TokenType TokenType;
 
-        protected string ConnectionString
+        protected CoreDbContext Db
         {
-            get { return _connectionString; }
+            get { return _db; }
         }
 
-        protected BaseTokenStore(string connectionString, TokenType tokenType)
+        protected BaseTokenStore(CoreDbContext db, TokenType tokenType)
         {
-            _connectionString = connectionString;
+            _db = db;
             TokenType = tokenType;
         }
 
@@ -43,8 +44,8 @@ namespace Thinktecture.IdentityServer.Core.EntityFramework
             var settings = new JsonSerializerSettings();
             settings.Converters.Add(new ClaimConverter());
             settings.Converters.Add(new ClaimsPrincipalConverter());
-            settings.Converters.Add(new ClientConverter(new ClientStore(ConnectionString)));
-            var svc = new ScopeStore(ConnectionString);
+            settings.Converters.Add(new ClientConverter(new ClientStore(Db)));
+            var svc = new ScopeStore(Db);
             var scopes = AsyncHelper.RunSync(async () => await svc.GetScopesAsync());
             settings.Converters.Add(new ScopeConverter(scopes.ToArray()));
             return settings;
@@ -60,32 +61,26 @@ namespace Thinktecture.IdentityServer.Core.EntityFramework
             return JsonConvert.DeserializeObject<T>(json, GetJsonSerializerSettings());
         }
 
-        public Task<T> GetAsync(string key)
+        public async Task<T> GetAsync(string key)
         {
-            using (var db = new CoreDbContext(ConnectionString))
-            {
-                var token = db.Tokens.FirstOrDefault(c => c.Key == key && c.TokenType == TokenType);
-                if (token == null || token.Expiry < DateTime.UtcNow) return Task.FromResult<T>(null);
+            var db = _db;
+            var token = await db.Tokens.FirstOrDefaultAsync(c => c.Key == key && c.TokenType == TokenType);
+            if (token == null || token.Expiry < DateTime.UtcNow) return null;
 
-                T value = ConvertFromJson(token.JsonCode);
-                return Task.FromResult(value);
-            }
+            T value = ConvertFromJson(token.JsonCode);
+            return value;
         }
 
-        public Task RemoveAsync(string key)
+        public async Task RemoveAsync(string key)
         {
-            using (var db = new CoreDbContext(ConnectionString))
+            var db = _db;
+            var code = await db.Tokens.FirstOrDefaultAsync(c => c.Key == key && c.TokenType == TokenType);
+
+            if (code != null)
             {
-                var code = db.Tokens.FirstOrDefault(c => c.Key == key && c.TokenType == TokenType);
-
-                if (code != null)
-                {
-                    db.Tokens.Remove(code);
-                    db.SaveChanges();
-                }
+                db.Tokens.Remove(code);
+                await db.SaveChangesAsync();
             }
-
-            return Task.FromResult(0);
         }
 
         public abstract Task StoreAsync(string key, T value);

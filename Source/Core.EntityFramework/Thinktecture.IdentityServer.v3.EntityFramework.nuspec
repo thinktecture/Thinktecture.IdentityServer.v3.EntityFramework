@@ -1,12 +1,12 @@
 <?xml version="1.0"?>
 <package >
   <metadata>
-    <id>Thinktecture.IdentityServer.v3.EntityFramework</id>
+    <id>Thinktecture.IdentityServer.v3.EntityFramework.Async</id>
     <version>0.0.0</version>
-    <title>Thinktecture IdentityServer v3 - Entity Framework</title>
+    <title>Thinktecture IdentityServer v3 - Entity Framework Async</title>
     <authors>Brock Allen, Dominick Baier, and contributors</authors>
     <owners>Brock Allen, Dominick Baier</owners>
-    <projectUrl>https://github.com/thinktecture/Thinktecture.IdentityServer.v3.EntityFramework</projectUrl>
+    <projectUrl>https://github.com/loning/Thinktecture.IdentityServer.v3.EntityFramework</projectUrl>
     <iconUrl>http://www.thinktecture.com/images/favicon.ico</iconUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>"Thinktecture IdentityServer v3 - Entity Framework" is an Entity Framework-based persistence layer for Thinktecture IdentityServer v3</description>
