@@ -23,6 +23,12 @@ namespace Thinktecture.IdentityServer.Core.EntityFramework
         public CoreDbContext(string connectionString)
             : base(connectionString)
         {
+            Configuration.ProxyCreationEnabled = false;
+        }
+
+        public CoreDbContext()
+            : this("Thinktecture.IdentityServer.Core")
+        {
         }
 
         public DbSet<Client> Clients { get; set; }
