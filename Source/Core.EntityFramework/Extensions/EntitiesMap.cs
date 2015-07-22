@@ -36,8 +36,6 @@ namespace Thinktecture.IdentityServer.EntityFramework.Entities
                 .ForMember(x => x.ScopeRestrictions, opt => opt.MapFrom(src => src.ScopeRestrictions.Select(x => x.Scope)))
                 .ForMember(x => x.AllowedCorsOrigins, opt => opt.MapFrom(src => src.AllowedCorsOrigins.Select(x => x.Origin)))
                 .ForMember(x => x.Claims, opt => opt.MapFrom(src => src.Claims.Select(x => new Claim(x.Type, x.Value))));
-
-            Mapper.AssertConfigurationIsValid();
         }
 
         public static Thinktecture.IdentityServer.Core.Models.Scope ToModel(this Entities.Scope s)
