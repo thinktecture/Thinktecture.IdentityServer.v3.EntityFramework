@@ -27,7 +27,9 @@ namespace IdentityServer3.EntityFramework.Entities
                 .ForMember(x => x.Claims, opts => opts.MapFrom(src => src.ScopeClaims.Select(x => x)));
             Mapper.CreateMap<Entities.ScopeClaim, IdentityServer3.Core.Models.ScopeClaim>(MemberList.Destination);
 
-            Mapper.CreateMap<Entities.ClientSecret, IdentityServer3.Core.Models.Secret>(MemberList.Destination);
+            Mapper.CreateMap<Entities.ClientSecret, IdentityServer3.Core.Models.Secret>(MemberList.Destination)
+                .ForMember(dest => dest.Type, opt => opt.Condition(srs => !srs.IsSourceValueNull));
+                
             Mapper.CreateMap<Entities.Client, IdentityServer3.Core.Models.Client>(MemberList.Destination)
                 .ForMember(x => x.UpdateAccessTokenClaimsOnRefresh, opt => opt.MapFrom(src => src.UpdateAccessTokenOnRefresh))
                 .ForMember(x => x.AllowAccessToAllCustomGrantTypes, opt => opt.MapFrom(src => src.AllowAccessToAllGrantTypes))
