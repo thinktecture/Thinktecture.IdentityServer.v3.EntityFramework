@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+using System.Data.Entity.Infrastructure;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -39,7 +40,7 @@ namespace IdentityServer3.EntityFramework
             if (context == null) throw new ArgumentNullException("context");
             if (scopeStore == null) throw new ArgumentNullException("scopeStore");
             if (clientStore == null) throw new ArgumentNullException("clientStore");
-            
+
             this.context = context;
             this.tokenType = tokenType;
             this.scopeStore = scopeStore;
@@ -85,27 +86,44 @@ namespace IdentityServer3.EntityFramework
             if (token != null)
             {
                 context.Tokens.Remove(token);
-                await context.SaveChangesAsync();
+
+                try
+                {
+                    await context.SaveChangesAsync();
+                }
+                catch (DbUpdateConcurrencyException ex)
+                {
+                    var entry = ex.Entries.Single();
+
+                    if (entry.State == EntityState.Deleted)
+                    {
+                        entry.State = EntityState.Detached;
+                    }
+                    else
+                    {
+                        throw;
+                    }
+                }
             }
         }
 
         public async Task<IEnumerable<ITokenMetadata>> GetAllAsync(string subject)
         {
-            var tokens = await context.Tokens.Where(x => 
+            var tokens = await context.Tokens.Where(x =>
                 x.SubjectId == subject &&
                 x.TokenType == tokenType).ToArrayAsync();
-            
-            var results = tokens.Select(x=>ConvertFromJson(x.JsonCode)).ToArray();
+
+            var results = tokens.Select(x => ConvertFromJson(x.JsonCode)).ToArray();
             return results.Cast<ITokenMetadata>();
         }
-        
+
         public async Task RevokeAsync(string subject, string client)
         {
-            var found = context.Tokens.Where(x => 
-                x.SubjectId == subject && 
-                x.ClientId == client && 
+            var found = context.Tokens.Where(x =>
+                x.SubjectId == subject &&
+                x.ClientId == client &&
                 x.TokenType == tokenType).ToArray();
-            
+
             context.Tokens.RemoveRange(found);
             await context.SaveChangesAsync();
         }
