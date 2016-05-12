@@ -49,5 +49,15 @@ namespace IdentityServer3.EntityFramework
 
             await context.SaveChangesAsync();
         }
+
+        protected override async Task<RefreshToken> ConvertFromJsonAsync( string json )
+        {
+          var token = await base.ConvertFromJsonAsync(json);
+          if( null != token.AccessToken ) {
+            var client = await clientStore.FindClientByIdAsync(token.AccessToken.ClientId);
+            token.AccessToken.Client = client;
+          }
+          return token;
+        }
     }
 }

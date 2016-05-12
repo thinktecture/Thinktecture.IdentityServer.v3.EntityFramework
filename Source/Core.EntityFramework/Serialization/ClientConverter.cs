@@ -27,13 +27,8 @@ namespace IdentityServer3.EntityFramework.Serialization
 
     public class ClientConverter : JsonConverter
     {
-        private readonly IClientStore _clientStore;
-
-        public ClientConverter(IClientStore clientStore)
+        public ClientConverter()
         {
-            if (clientStore == null) throw new ArgumentNullException("clientStore");
-
-            _clientStore = clientStore;
         }
 
         public override bool CanConvert(Type objectType)
@@ -44,7 +39,7 @@ namespace IdentityServer3.EntityFramework.Serialization
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
         {
             var source = serializer.Deserialize<ClientLite>(reader);
-            return AsyncHelper.RunSync(async () => await _clientStore.FindClientByIdAsync(source.ClientId));
+            return new Client { ClientId = source.ClientId };
         }
 
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)

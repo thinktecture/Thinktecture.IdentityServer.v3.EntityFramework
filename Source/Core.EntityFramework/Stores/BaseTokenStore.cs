@@ -51,8 +51,8 @@ namespace IdentityServer3.EntityFramework
             var settings = new JsonSerializerSettings();
             settings.Converters.Add(new ClaimConverter());
             settings.Converters.Add(new ClaimsPrincipalConverter());
-            settings.Converters.Add(new ClientConverter(clientStore));
-            settings.Converters.Add(new ScopeConverter(scopeStore));
+            settings.Converters.Add(new ClientConverter());
+            settings.Converters.Add(new ScopeConverter());
             return settings;
         }
 
@@ -61,9 +61,9 @@ namespace IdentityServer3.EntityFramework
             return JsonConvert.SerializeObject(value, GetJsonSerializerSettings());
         }
 
-        protected T ConvertFromJson(string json)
+        protected virtual Task<T> ConvertFromJsonAsync(string json)
         {
-            return JsonConvert.DeserializeObject<T>(json, GetJsonSerializerSettings());
+            return Task.FromResult(JsonConvert.DeserializeObject<T>(json, GetJsonSerializerSettings()));
         }
 
         public async Task<T> GetAsync(string key)
@@ -75,7 +75,8 @@ namespace IdentityServer3.EntityFramework
                 return null;
             }
 
-            return ConvertFromJson(token.JsonCode);
+            var value = await ConvertFromJsonAsync(token.JsonCode);
+            return value;
         }
 
         public async Task RemoveAsync(string key)
@@ -95,7 +96,8 @@ namespace IdentityServer3.EntityFramework
                 x.SubjectId == subject &&
                 x.TokenType == tokenType).ToArrayAsync();
             
-            var results = tokens.Select(x=>ConvertFromJson(x.JsonCode)).ToArray();
+            var tasks = tokens.Select(x => ConvertFromJsonAsync(x.JsonCode));
+            var results = await Task.WhenAll(tasks);
             return results.Cast<ITokenMetadata>();
         }
         

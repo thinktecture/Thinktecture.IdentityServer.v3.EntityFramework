@@ -28,15 +28,15 @@ namespace IdentityServer3.EntityFramework.Tests.Serialization
                 AllowRememberConsent = true, 
                 RedirectUris = new List<string>{"http://foo.com"}
             };
-            var clientStore = new InMemoryClientStore(new Client[]{client});
-            var converter = new ClientConverter(clientStore);
+            var converter = new ClientConverter();
 
             var settings = new JsonSerializerSettings();
             settings.Converters.Add(converter);
             var json = JsonConvert.SerializeObject(client, settings);
 
             var result = JsonConvert.DeserializeObject<Client>(json, settings);
-            Assert.Same(client, result);
+            Assert.IsType<Client>(result);
+            Assert.Equal(client.ClientId, result.ClientId);
         }
     }
 }

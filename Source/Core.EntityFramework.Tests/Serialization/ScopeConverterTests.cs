@@ -40,14 +40,15 @@ namespace IdentityServer3.EntityFramework.Tests.Serialization
                 DisplayName = "foo",
                 Description = "desc",
             };
-            var converter = new ScopeConverter(new InMemoryScopeStore(new Scope[] { s1, s2 }));
+            var converter = new ScopeConverter();
 
             var settings = new JsonSerializerSettings();
             settings.Converters.Add(converter);
             var json = JsonConvert.SerializeObject(s1, settings);
 
             var result = JsonConvert.DeserializeObject<Scope>(json, settings);
-            Assert.Same(s1, result);
+            Assert.IsType<Scope>(result);
+            Assert.Equal(s1.Name, result.Name);
         }
     }
 }

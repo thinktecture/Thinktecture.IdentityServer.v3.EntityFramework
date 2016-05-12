@@ -42,5 +42,13 @@ namespace IdentityServer3.EntityFramework
             context.Tokens.Add(efToken);
             await context.SaveChangesAsync();
         }
+
+        protected override async Task<Token> ConvertFromJsonAsync( string json )
+        {
+          var token = await base.ConvertFromJsonAsync(json);
+          var client = await clientStore.FindClientByIdAsync(token.ClientId);
+          token.Client = client;
+          return token;
+        }
     }
 }

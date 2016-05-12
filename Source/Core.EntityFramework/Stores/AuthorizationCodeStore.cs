@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using IdentityServer3.EntityFramework.Entities;
 using IdentityServer3.Core.Models;
@@ -42,6 +43,14 @@ namespace IdentityServer3.EntityFramework
 
             context.Tokens.Add(efCode);
             await context.SaveChangesAsync();
+        }
+
+        protected override async Task<AuthorizationCode> ConvertFromJsonAsync( string json )
+        {
+          var token = await base.ConvertFromJsonAsync(json);
+          token.Client = await clientStore.FindClientByIdAsync(token.ClientId);
+          token.RequestedScopes = await scopeStore.FindScopesAsync(token.RequestedScopes.Select(s => s.Name));
+          return token;
         }
     }
 }

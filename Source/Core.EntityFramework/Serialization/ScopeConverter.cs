@@ -28,13 +28,8 @@ namespace IdentityServer3.EntityFramework.Serialization
 
     public class ScopeConverter : JsonConverter
     {
-        private readonly IScopeStore scopeStore;
-
-        public ScopeConverter(IScopeStore scopeStore)
+        public ScopeConverter()
         {
-            if (scopeStore == null) throw new ArgumentNullException("scopeStore");
-
-            this.scopeStore = scopeStore;
         }
 
         public override bool CanConvert(Type objectType)
@@ -45,8 +40,8 @@ namespace IdentityServer3.EntityFramework.Serialization
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
         {
             var source = serializer.Deserialize<ScopeLite>(reader);
-            var scopes = AsyncHelper.RunSync(async ()=>await scopeStore.FindScopesAsync(new string[]{source.Name}));
-            return scopes.Single();
+            var scope = new Scope { Name = source.Name, };
+            return scope;
         }
 
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)

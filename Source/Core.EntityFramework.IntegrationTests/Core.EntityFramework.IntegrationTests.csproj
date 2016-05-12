@@ -85,6 +85,10 @@
     <Compile Include="ClientConfigurationDbContextTests.cs" />
     <Compile Include="OperationalConfigurationDbContextTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Stores\AuthorizationCodeStoreTests.cs" />
+    <Compile Include="Stores\RefreshTokenStoreTests.cs" />
+    <Compile Include="Stores\TokenHandleStoreTests.cs" />
+    <Compile Include="Stores\TokenStoreTestsBase.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
