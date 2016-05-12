@@ -83,6 +83,7 @@
   <ItemGroup>
     <Compile Include="AutomapperTests.cs" />
     <Compile Include="ClientConfigurationDbContextTests.cs" />
+    <Compile Include="OperationalConfigurationDbContextTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

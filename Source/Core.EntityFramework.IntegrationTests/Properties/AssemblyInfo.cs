@@ -34,3 +34,6 @@ using System.Runtime.InteropServices;
 // [assembly: AssemblyVersion("1.0.*")]
 [assembly: AssemblyVersion("1.0.0.0")]
 [assembly: AssemblyFileVersion("1.0.0.0")]
+
+// turn off test parallelization, because all cases are sharing a single database
+[assembly: Xunit.CollectionBehavior(DisableTestParallelization = true)]
