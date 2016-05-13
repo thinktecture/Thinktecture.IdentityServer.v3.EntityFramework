@@ -20,6 +20,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using EntityFramework.Extensions;
 using IdentityServer3.EntityFramework.Logging;
 
 namespace IdentityServer3.EntityFramework
@@ -100,14 +101,9 @@ namespace IdentityServer3.EntityFramework
 
                 using (var db = CreateOperationalDbContext())
                 {
-                    var query =
-                        from token in db.Tokens
-                        where token.Expiry < DateTimeOffset.UtcNow
-                        select token;
-
-                    db.Tokens.RemoveRange(query);
-
-                    await db.SaveChangesAsync();
+                    await db.Tokens
+                        .Where(x => x.Expiry < DateTimeOffset.UtcNow)
+                        .DeleteAsync();
                 }
             }
             catch(Exception ex)
