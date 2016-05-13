@@ -2,6 +2,7 @@
 using IdentityServer3.EntityFramework.Entities;
 using System.Data.Entity;
 using System.Linq;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace Core.EntityFramework.IntegrationTests
@@ -14,6 +15,22 @@ namespace Core.EntityFramework.IntegrationTests
         {
             Database.SetInitializer<ClientConfigurationDbContext>(
                 new DropCreateDatabaseAlways<ClientConfigurationDbContext>());
+
+            //Database.SetInitializer<OperationalDbContext>(
+            //    new DropCreateDatabaseAlways<OperationalDbContext>());
+        }
+
+        [Fact]
+        public void CleansUpDatabase()
+        {
+            var cleanUp = new TokenCleanup(new EntityFrameworkServiceOptions
+            {
+                ConnectionString = ConfigConnectionStringName
+            },3);
+
+            cleanUp.Start();
+
+            Task.Delay(100000).Wait();
         }
 
         [Fact]

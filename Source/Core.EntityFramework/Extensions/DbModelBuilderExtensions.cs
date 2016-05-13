@@ -17,8 +17,10 @@
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Data.Entity;
 using System.Data.Entity.Core.Objects.DataClasses;
+using System.Data.Entity.Infrastructure.Annotations;
 using IdentityServer3.EntityFramework.Entities;
 
 namespace IdentityServer3.EntityFramework
@@ -136,6 +138,8 @@ namespace IdentityServer3.EntityFramework
         public static void ConfigureTokens(this DbModelBuilder modelBuilder, string schema)
         {
             modelBuilder.Entity<Token>().ToTable(EfConstants.TableNames.Token, schema);
+            modelBuilder.Entity<Token>().Property(x => x.Expiry)
+                .HasColumnAnnotation("Index", new IndexAnnotation(new IndexAttribute("Expiry") { IsUnique = false}));
         }
         public static void ConfigureScopes(this DbModelBuilder modelBuilder, string schema)
         {
