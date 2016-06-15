@@ -9,11 +9,19 @@ namespace IdentityServer3.EntityFramework.Tests.Extensions
 { 
     public class StringExtensionTests
     {
+        private const int Iterations = 10 * 1000;
+
         private readonly ITestOutputHelper _output;
+        private readonly List<string> _scopes = new List<string>();
 
         public StringExtensionTests(ITestOutputHelper output)
         {
             _output = output;
+
+            for (var i = 0; i < 50; i++)
+            {
+                _scopes.Add(string.Format("Scope {0}", i));
+            }
         }
 
         [Fact]
@@ -34,37 +42,53 @@ namespace IdentityServer3.EntityFramework.Tests.Extensions
         [Fact]
         public void IsFasterThanOldImplementation()
         {
-            const int iterations = 10*1000;
+            var oldImplTimeSpan = GetExecutionDuration(OldStringifyScopes);
+            var newImplTimeSpan = GetExecutionDuration(StringExtensions.GetAsCommaSeparatedString);
 
-            var scopes = new List<string>();
-            for (var i = 0; i < 50; i++)
-            {
-                scopes.Add(string.Format("Scope {0}", i));
-            }
+            _output.WriteLine("Old implementation took: {0}ms", oldImplTimeSpan);
+            _output.WriteLine("New implemenation took: {0}ms", newImplTimeSpan);
 
+            Assert.True(newImplTimeSpan < oldImplTimeSpan);
+        }
+
+        [Fact]
+        public void UsesLessMemoryThanOldImplementation()
+        {
+            var oldUsage = GetMemoryUsage(OldStringifyScopes);
+            var newUsage = GetMemoryUsage(StringExtensions.GetAsCommaSeparatedString);
+
+            _output.WriteLine("Old implementation used {0} bytes", oldUsage);
+            _output.WriteLine("New implemenation used {0} byes", newUsage);
+
+            Assert.True(newUsage < oldUsage);
+        }
+
+        private TimeSpan GetExecutionDuration(Func<IEnumerable<string>, string> func)
+        {
             var stopwatch = new Stopwatch();
 
             stopwatch.Start();
-            for (var i = 0; i < iterations; i++)
+            for (var i = 0; i < Iterations; i++)
             {
-                scopes.GetAsCommaSeparatedString();
+                func(_scopes);
             }
             stopwatch.Stop();
 
-            var newImplTimeSpan = stopwatch.Elapsed;
+            return stopwatch.Elapsed;
+        }
 
-            stopwatch.Reset();
-            stopwatch.Start();
-            for (var i = 0; i < iterations; i++)
+        private long GetMemoryUsage(Func<IEnumerable<string>, string> func)
+        {
+            var currentMemory = GC.GetTotalMemory(true);
+
+            for (var i = 0; i < Iterations; i++)
             {
-                OldStringifyScopes(scopes);
+                func(_scopes);
             }
-            stopwatch.Stop();
 
-            var oldImplTimeSpan = stopwatch.Elapsed;
+            var newMemory = GC.GetTotalMemory(false);
 
-            _output.WriteLine("Old implementation took: {0}ms; New implemenation took: {1}ms", oldImplTimeSpan, newImplTimeSpan);
-            Assert.True(newImplTimeSpan < oldImplTimeSpan);
+            return newMemory - currentMemory;
         }
 
         private string OldStringifyScopes(IEnumerable<string> scopes)
