@@ -17,8 +17,8 @@
     <tags>IdentityServer OpenID Connect OpenIDConnect OAuth2 OWIN ASP.NET Katana WebApi SSO Federation Claims Identity EF EntityFramework</tags>
 
     <dependencies>
-      <dependency id="IdentityServer3" version="2.3.0"  />
-      <dependency id="AutoMapper" version="4.1.1" />
+      <dependency id="IdentityServer3" version="2.5.0"  />
+      <dependency id="AutoMapper" version="4.2.0" />
       <dependency id="EntityFramework" version="6.1.3" />
       <dependency id="Newtonsoft.Json" version="7.0.1" />
     </dependencies>

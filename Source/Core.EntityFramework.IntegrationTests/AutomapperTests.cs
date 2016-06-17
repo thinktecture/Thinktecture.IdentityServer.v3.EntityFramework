@@ -28,7 +28,8 @@ namespace Core.EntityFramework.IntegrationTests
             };
             var m = s2.ToModel();
 
-            Mapper.AssertConfigurationIsValid();
+            IdentityServer3.EntityFramework.Entities.EntitiesMap.Mapper.ConfigurationProvider.AssertConfigurationIsValid();
+            IdentityServer3.Core.Models.EntitiesMap.Mapper.ConfigurationProvider.AssertConfigurationIsValid();
         }
     }
 }

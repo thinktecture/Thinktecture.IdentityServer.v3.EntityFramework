@@ -112,7 +112,7 @@ namespace IdentityServer3.EntityFramework
             }
             catch(Exception ex)
             {
-                Logger.ErrorException("Exception cleanring tokens", ex);
+                Logger.ErrorException("Exception cleaning tokens", ex);
             }
         }
     }

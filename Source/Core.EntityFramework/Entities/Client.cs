@@ -44,6 +44,7 @@ namespace IdentityServer3.EntityFramework.Entities
 
         public virtual bool RequireConsent { get; set; }
         public virtual bool AllowRememberConsent { get; set; }
+        public virtual bool AllowAccessTokensViaBrowser { get; set; }
 
         public virtual Flows Flow { get; set; }
         public virtual bool AllowClientCredentialsOnly { get; set; }
@@ -53,6 +54,7 @@ namespace IdentityServer3.EntityFramework.Entities
 
         public virtual string LogoutUri { get; set; }
         public virtual bool LogoutSessionRequired { get; set; }
+        public virtual bool RequireSignOutPrompt { get; set; }
 
         public virtual bool AllowAccessToAllScopes { get; set; }
         public virtual ICollection<ClientScope> AllowedScopes { get; set; }
