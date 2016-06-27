@@ -70,7 +70,7 @@ namespace IdentityServer3.EntityFramework
         {
             var token = await context.Tokens.FindAsync(key, tokenType);
 
-            if (token == null || token.Expiry < DateTimeOffset.UtcNow)
+            if (token == null)
             {
                 return null;
             }
