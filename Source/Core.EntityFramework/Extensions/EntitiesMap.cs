@@ -33,10 +33,10 @@ namespace IdentityServer3.EntityFramework.Entities
                     .ForMember(x => x.ScopeSecrets, opts => opts.MapFrom(src => src.ScopeSecrets.Select(x => x)));
                 config.CreateMap<Entities.ScopeClaim, IdentityServer3.Core.Models.ScopeClaim>(MemberList.Destination);
                 config.CreateMap<Entities.ScopeSecret, IdentityServer3.Core.Models.Secret>(MemberList.Destination)
-                    .ForMember(dest => dest.Type, opt => opt.Condition(srs => !srs.IsSourceValueNull));
+                    .ForMember(dest => dest.Type, opt => opt.Condition(srs => srs != null));
 
                 config.CreateMap<Entities.ClientSecret, IdentityServer3.Core.Models.Secret>(MemberList.Destination)
-                     .ForMember(dest => dest.Type, opt => opt.Condition(srs => !srs.IsSourceValueNull));
+                     .ForMember(dest => dest.Type, opt => opt.Condition(srs => srs != null));
                 config.CreateMap<Entities.Client, IdentityServer3.Core.Models.Client>(MemberList.Destination)
                     .ForMember(x => x.UpdateAccessTokenClaimsOnRefresh, opt => opt.MapFrom(src => src.UpdateAccessTokenOnRefresh))
                     .ForMember(x => x.AllowAccessToAllCustomGrantTypes, opt => opt.MapFrom(src => src.AllowAccessToAllGrantTypes))
