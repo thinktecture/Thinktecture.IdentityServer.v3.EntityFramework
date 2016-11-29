@@ -40,11 +40,9 @@ namespace IdentityServer3.EntityFramework
                 select allowed.Origin;
             var urls = await query.ToArrayAsync();
 
-            var origins = urls.Select(x => x.GetOrigin()).Where(x => x != null).Distinct();
-            
-            var result = origins.Contains(origin, StringComparer.OrdinalIgnoreCase);
-            
-            return result;
+            var origins = urls.Select(x => x.GetOrigin()).Where(x => x != null).Distinct().ToList();
+
+            return urls.ToList().Contains("*") || origins.Contains(origin, StringComparer.OrdinalIgnoreCase);
         }
     }
 }
