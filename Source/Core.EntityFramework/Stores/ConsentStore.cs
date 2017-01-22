@@ -58,7 +58,7 @@ namespace IdentityServer3.EntityFramework
 
             if (found == null)
             {
-                return null;
+                return Task.FromResult<IdentityServer3.Core.Models.Consent>(null);
             }
                 
             var result = new IdentityServer3.Core.Models.Consent
