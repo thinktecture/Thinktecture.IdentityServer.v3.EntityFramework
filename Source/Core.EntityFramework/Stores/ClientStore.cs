@@ -46,6 +46,7 @@ namespace IdentityServer3.EntityFramework
         public async Task<IdentityServer3.Core.Models.Client> FindClientByIdAsync(string clientId)
         {
             var query = context.Clients
+                    .AsNoTracking()
                     .Include(x => x.ClientSecrets)
                     .Include(x => x.RedirectUris)
                     .Include(x => x.PostLogoutRedirectUris)

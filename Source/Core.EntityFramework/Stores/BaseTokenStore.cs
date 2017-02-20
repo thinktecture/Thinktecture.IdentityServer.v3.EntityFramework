@@ -121,21 +121,29 @@ namespace IdentityServer3.EntityFramework
 
         public async Task<IEnumerable<ITokenMetadata>> GetAllAsync(string subject)
         {
-            Entities.Token[] tokens = null;
+            string[] tokens = null;
             if (options != null && options.SynchronousReads)
             {
-                tokens = context.Tokens.Where(x =>
+                tokens = context.Tokens
+                    .AsNoTracking()
+                    .Where(x =>
                     x.SubjectId == subject &&
-                    x.TokenType == tokenType).ToArray();
+                    x.TokenType == tokenType)
+                    .Select(x => x.JsonCode)
+                    .ToArray();
             }
             else
             {
-                tokens = await context.Tokens.Where(x => 
+                tokens = await context.Tokens
+                    .AsNoTracking()
+                    .Where(x => 
                     x.SubjectId == subject &&
-                    x.TokenType == tokenType).ToArrayAsync();
+                    x.TokenType == tokenType)
+                    .Select(x => x.JsonCode)
+                    .ToArrayAsync();
             }
 
-            var results = tokens.Select(x=>ConvertFromJson(x.JsonCode)).ToArray();
+            var results = tokens.Select(x=>ConvertFromJson(x)).ToArray();
             return results.Cast<ITokenMetadata>();
         }
         
