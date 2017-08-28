@@ -5,12 +5,12 @@ properties {
 	$dist_directory = "$base_directory\distribution"
 	$sln_file = "$src_directory\IdentityServer3.EntityFramework.sln"
 	$target_config = "Release"
-	$framework_version = "v4.5"
+	$framework_version = "v4.5.2"
 	$xunit_path = "$src_directory\packages\xunit.runners.2.0.0\tools\xunit.console.exe"
 	$nuget_path = "$src_directory\.nuget\nuget.exe"
 	
 	$buildNumber = 0;
-	$version = "2.5.0.0"
+	$version = "2.6.0.0"
 	$preRelease = $null
 }
 
@@ -24,7 +24,7 @@ task Clean {
 }
 
 task Compile -depends UpdateVersion {
-	exec { msbuild /nologo /verbosity:q $sln_file /p:Configuration=$target_config /p:TargetFrameworkVersion=v4.5 }
+	exec { msbuild /nologo /verbosity:q $sln_file /p:Configuration=$target_config /p:TargetFrameworkVersion=v4.5.2 }
 
 	if ($LastExitCode -ne 0) {
         exit $LastExitCode

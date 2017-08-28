@@ -5,7 +5,7 @@ properties {
 	$dist_directory = "$base_directory\distribution"
 	$sln_file = "$src_directory\IdentityServer3.EntityFramework.sln"
 	$target_config = "Release"
-	$framework_version = "v4.5"
+	$framework_version = "v4.52"
 	$xunit_path = "$src_directory\packages\xunit.runners.2.0.0\tools\xunit.console.exe"
 	$nuget_path = "$src_directory\.nuget\nuget.exe"
 	
