@@ -108,11 +108,17 @@ namespace IdentityServer3.EntityFramework
             Consent[] found = null;
             if (options != null && options.SynchronousReads)
             {
-                found = context.Consents.Where(x => x.Subject == subject).ToArray();
+                found = context.Consents
+                    .AsNoTracking()
+                    .Where(x => x.Subject == subject)
+                    .ToArray();
             }
             else
             {
-                found = await context.Consents.Where(x => x.Subject == subject).ToArrayAsync();
+                found = await context.Consents
+                    .AsNoTracking()
+                    .Where(x => x.Subject == subject)
+                    .ToArrayAsync();
             }
 
             
