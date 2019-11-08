@@ -98,7 +98,7 @@ namespace IdentityServer3.EntityFramework
                 context.Consents.Remove(item);
             }
 
-            item.Scopes = StringifyScopes(consent.Scopes);
+            item.Scopes = consent.Scopes.GetAsCommaSeparatedString();
 
             await context.SaveChangesAsync();
         }
@@ -133,16 +133,6 @@ namespace IdentityServer3.EntityFramework
             }
 
             return scopes.Split(',');
-        }
-
-        private string StringifyScopes(IEnumerable<string> scopes)
-        {
-            if (scopes == null || !scopes.Any())
-            {
-                return null;
-            }
-
-            return scopes.Aggregate((s1, s2) => s1 + "," + s2);
         }
 
         public async Task RevokeAsync(string subject, string client)

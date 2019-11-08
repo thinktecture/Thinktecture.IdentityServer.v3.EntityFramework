@@ -15,6 +15,10 @@
  */
 
 
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+
 namespace IdentityServer3.EntityFramework
 {
     internal static class StringExtensions
@@ -36,6 +40,26 @@ namespace IdentityServer3.EntityFramework
             }
 
             return null;
+        }
+
+        public static string GetAsCommaSeparatedString(this IEnumerable<string> collection)
+        {
+            if (collection == null || !collection.Any())
+            {
+                return null;
+            }
+
+            var builder = new StringBuilder();
+
+            foreach (var item in collection)
+            {
+                builder.Append(item);
+                builder.Append(",");
+            }
+
+            builder.Remove(builder.Length - 1, 1);
+
+            return builder.ToString();
         }
     }
 }

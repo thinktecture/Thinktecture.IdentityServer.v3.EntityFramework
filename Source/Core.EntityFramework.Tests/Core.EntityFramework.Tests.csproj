@@ -87,6 +87,7 @@
     <Compile Include="Serialization\ClaimsPrincipalConverterTests.cs" />
     <Compile Include="Serialization\ClientConverterTests.cs" />
     <Compile Include="Serialization\ScopeConverterTests.cs" />
+    <Compile Include="Extensions\StringExtensionTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
